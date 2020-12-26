@@ -43,29 +43,7 @@ server <- function(input, output) {
     })
     
     
-    # display car image, either hovered or selected in the table
-    output$selectedCar <- renderImage({
 
-      idx <- NULL
-        
-      if (!is.null(input$df_selected_rows_selected)) {
-          idx <- input$df_selected_rows_selected
-      }
-
-      if (!is.null(event_data("plotly_hover")$customdata)) {
-          idx <- event_data("plotly_hover")$customdata %>% as.integer()
-      }
-    
-      if (!is.null(idx)) {
-          list(src = paste0(imagesdir,df_cars$filename[idx]), width = 500)    
-      } else {
-          list(src = paste0(imagesdir,'empty.png'), width = 500)
-      }
-
-    }, deleteFile = FALSE)
-
-    
-    
     # display table of lasso-selected cars
     output$df_selected <- renderDT({
 
@@ -78,7 +56,30 @@ server <- function(input, output) {
     }, selection = 'single')  # 'single' to provide interactive image display
     
     
+    
+    # display car image, either hovered or selected in the table
+    output$selectedCar <- renderImage({
+      
+      idx <- NULL
+      
+      if (!is.null(input$df_selected_rows_selected)) {
+        idx <- input$df_selected_rows_selected
+      }
+      
+      if (!is.null(event_data("plotly_hover")$customdata)) {
+        idx <- event_data("plotly_hover")$customdata %>% as.integer()
+      }
+      
+      if (!is.null(idx)) {
+        list(src = paste0(imagesdir,df_cars$filename[idx]), width = 500)    
+      } else {
+        list(src = paste0(imagesdir,'empty.png'), width = 500)
+      }
+      
+    }, deleteFile = FALSE)
+    
+    
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server, options = list(display.mode = "showcase"))

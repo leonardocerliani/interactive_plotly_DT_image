@@ -6,5 +6,6 @@
 
 Dependencies: `shiny`, `plotly`, `DT`
 
+Interact with this app on [shinyapps.io](https://agronomous.shinyapps.io/interactive_plotly_dt_image/)
 
 ![image](demo.gif)

@@ -43,8 +43,6 @@ server <- function(input, output) {
     })
     
     
-
-    
     # NB: I need a df_selected() reactive var because:
     # - lasso creates df_selected() which is rendered into output$df_selected_table
     # - row (car) to display is clicked in df_selected_table -> idx_selected

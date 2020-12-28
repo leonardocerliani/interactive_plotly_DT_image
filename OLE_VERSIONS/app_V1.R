@@ -20,7 +20,7 @@ ui <- fluidPage(
        plotOutput("selectedCar")
     ),
     column(6,
-       DTOutput('df_selected_table')
+       DTOutput('df_selected')
     )
   )
 
@@ -44,13 +44,13 @@ server <- function(input, output) {
     
     
 
-    
-    # NB: I need a df_selected() reactive var because:
-    # - lasso creates df_selected() which is rendered into output$df_selected_table
-    # - row (car) to display is clicked in df_selected_table -> idx_selected
-    # - the correct car to display is found with rownames(df_selected())[idx_selected]
-    
-    df_selected <- reactive({
+    # display table of lasso-selected cars
+    # NB: I need to create a df_sample reactive - which is rendered as df_selected -
+    # since I need to select the appropriate index in the image selection below.
+    # To be more precise, when the lasso selection creates a table, to get the right
+    # image to display, I need to retrieve it *not* from the original df_cars, but
+    # from the df_car index which is stored inside df_sample
+    df_sample <- reactive({
       req(event_data("plotly_selected"))
       rows <- event_data("plotly_selected")$customdata %>% as.integer()
       
@@ -58,10 +58,8 @@ server <- function(input, output) {
         select(filename, City.mpg, Width, Driveline)
     })
     
-    
-    # display table of lasso-selected cars
-    output$df_selected_table <- renderDT({
-      df_selected()
+    output$df_selected <- renderDT({
+      df_sample()
     }, selection = 'single')  # 'single' to provide interactive image display
     
     
@@ -71,9 +69,9 @@ server <- function(input, output) {
       
       idx <- NULL
       
-      if (!is.null(input$df_selected_table_rows_selected)) {
-        idx_selected <- input$df_selected_table_rows_selected
-        idx <- rownames(df_selected())[idx_selected] %>% as.integer
+      if (!is.null(input$df_selected_rows_selected)) {
+        idx_selected <- input$df_selected_rows_selected
+        idx <- rownames(df_sample())[idx_selected] %>% as.integer
       }
       
       if (!is.null(event_data("plotly_hover")$customdata)) {

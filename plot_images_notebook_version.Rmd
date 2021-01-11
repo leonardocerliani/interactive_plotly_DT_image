@@ -1,0 +1,80 @@
+---
+title: "plot_images_intraction"
+output: html_document
+runtime: shiny
+---
+
+```{r, echo=FALSE, message=FALSE}
+library(shiny)
+library(plotly)
+library(DT)
+
+
+# import data
+df_cars <- read.csv("cars_part.csv", stringsAsFactors = FALSE)
+imagesdir <- paste0(getwd(),'/imagecars/')
+```
+
+
+
+### Plot the markers
+```{r, echo=FALSE}
+
+# Cars scatterplot
+output$carsplot <- renderPlotly({
+  
+  p <- plot_ly(
+    df_cars, 
+    x = ~City.mpg, 
+    y = ~Width, 
+    customdata = rownames(df_cars)
+  )
+  
+  p %>% add_markers(
+    text = ~filename, 
+    color = ~Driveline, 
+    marker = list(size=10)
+  )
+
+})
+
+
+# ------------ UI -------------
+
+plotlyOutput("carsplot")
+
+```
+
+
+### Record the hovering and display the corresponding image
+```{r, echo=FALSE}
+output$selectedCar <- renderImage({
+      
+      idx <- NULL # starting state: nothing is hovered or clicked
+
+      # when a marker is hovered, record to which row of the table it refers to
+      idx_hover <- event_data("plotly_hover")$customdata
+      if (!is.null(idx_hover)) {
+        idx <- idx_hover %>% as.integer()
+      }
+
+      # if neither of the above condition is true
+      if (!is.null(idx)) {
+        list(src = paste0(imagesdir,df_cars$filename[idx]), width = 500)
+      } else {
+        list(src = paste0(imagesdir,'empty.png'), width = 500)
+      }
+
+      
+    }, deleteFile = FALSE)
+
+
+# ------------ UI -------------
+
+plotOutput("selectedCar")
+
+
+```
+
+
+

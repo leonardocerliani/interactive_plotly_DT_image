@@ -81,19 +81,20 @@ server <- function(input, output) {
       if (!is.null(idx_df_selected)) {
         idx <- rownames(df_selected())[idx_df_selected] %>% as.integer
       }
-      
+
       # when a marker is hovered
-      idf_hover <- event_data("plotly_hover")$customdata
-      if (!is.null(idf_hover)) {
-        idx <- idf_hover %>% as.integer()
+      idx_hover <- event_data("plotly_hover")$customdata
+      if (!is.null(idx_hover)) {
+        idx <- idx_hover %>% as.integer()
       }
-      
+
       # if neither of the above condition is true
       if (!is.null(idx)) {
-        list(src = paste0(imagesdir,df_cars$filename[idx]), width = 500)    
+        list(src = paste0(imagesdir,df_cars$filename[idx]), width = 500)
       } else {
         list(src = paste0(imagesdir,'empty.png'), width = 500)
       }
+
       
     }, deleteFile = FALSE)
     
@@ -102,3 +103,41 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui, server)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
